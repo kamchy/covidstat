@@ -19,15 +19,16 @@ import javafx.util.converter.NumberStringConverter;
 import java.time.LocalDate;
 
 public class CovidView extends VBox {
-    private GridPane gp = new GridPane();
+    private final GridPane gp = new GridPane();
     private final CovidViewModel viewModel;
 
-    private ListView<Country> listView = new ListView<>();
-    private Label laConfirmed = new Label();
-    private Label laDeaths = new Label();
-    private Label laActive = new Label();
-    private Label laRecovered = new Label();
-    private Label laDate = new Label();
+    private final ListView<Country> listView = new ListView<>();
+    private final Label laConfirmed = new Label();
+    private final Label laDeaths = new Label();
+    private final Label laActive = new Label();
+    private final Label laRecovered = new Label();
+    private final Label laDate = new Label();
+    private ChartView chartView;
 
     public CovidView(CovidViewModel viewModel) {
         this.viewModel = viewModel;
@@ -45,8 +46,9 @@ public class CovidView extends VBox {
         listView.itemsProperty().bind(viewModel.countriesProperty());
         listView.setCellFactory(new CountryCellFactory());
 
+
         listView.getSelectionModel().selectedItemProperty().addListener((o, ov, nv)-> {
-           viewModel.update(nv);
+            viewModel.update(nv);
         });
 
         laConfirmed.textProperty().bindBidirectional(viewModel.confirmedProperty(), new NumberStringConverter());
@@ -56,10 +58,12 @@ public class CovidView extends VBox {
         laDate.textProperty().bindBidirectional(viewModel.getDateProperty(), new LocalDateConverter());
 
 
+
     }
 
     private void createView() {
         var gpwrap = new VBox();
+        chartView = new ChartView(viewModel.selectedCountryCasesProperty());
         gpwrap.setAlignment(Pos.CENTER);
 
         gp.setPadding(new Insets(20));
@@ -73,12 +77,16 @@ public class CovidView extends VBox {
         addRow(1, 2, "Active", laActive);
         addRow(1,3, "Recovered", laRecovered);
         addRow(1,4, "Date", laDate);
+        gp.add(chartView, 1, 5, 3, 1);
+
 
         final ColumnConstraints col = new ColumnConstraints();
+        col.setPercentWidth(30);
+        final ColumnConstraints chartCol = new ColumnConstraints();
+        col.setHgrow(Priority.NEVER);
+        chartCol.setHgrow(Priority.ALWAYS);
 
-        col.setPercentWidth( 30 );
-        gp.getColumnConstraints().addAll( col, col );
-        gp.getColumnConstraints().get(0).setHgrow(Priority.ALWAYS);
+        gp.getColumnConstraints().addAll( col, col, col, chartCol);
         gpwrap.getChildren().add( gp );
         VBox.setVgrow(gpwrap, Priority.ALWAYS );
 

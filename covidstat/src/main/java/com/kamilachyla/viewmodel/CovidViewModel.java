@@ -35,12 +35,9 @@ public class CovidViewModel {
     private final CovidUpdateService casesService;
     private final CasesPerCountryModel model;
 
-    public SimpleObjectProperty<Country> selectedCountryProperty() {
-        return selectedCountry;
-    }
 
-    public SimpleObjectProperty<Case> currentCaseProperty() {
-        return currentCase;
+    public SimpleListProperty<Case> selectedCountryCasesProperty() {
+        return selectedCountryCases;
     }
 
     public SimpleIntegerProperty confirmedProperty() {
@@ -67,33 +64,32 @@ public class CovidViewModel {
             model.setCountries(countriesService.getValue());
             countries.set(FXCollections.observableList(model.getCountries()));
         });
+        countriesService.start();
 
         this.casesService = new CovidUpdateService(downloader);
-        countriesService.start();
         casesService.setOnSucceeded(wse -> {
             final Country sel = selectedCountry.get();
             if (sel != null) {
                 model.addCases(sel, casesService.getValue());
                 selectedCountryCases.set(FXCollections.observableList(model.getCases(sel)));
-                System.out.printf(" with case %s%n", currentCase.get());
-
             }
         });
 
         selectedCountry.addListener((o, ov, nv) -> {
-            if (model.getCases(nv).isEmpty()) {
+            boolean empty = model.getCases(nv).isEmpty();
+            if (empty) {
                 casesService.restart();
+            } else {
+                selectedCountryCases.set(FXCollections.observableList(model.getCases(nv)));
             }
-            selectedCountryCases.set(FXCollections.observableList(model.getCases(nv)));
         });
 
-        // currentCase will always point to 0th element of selectedCountryCases when it is changed
         selectedCountryCases.addListener((o, ov, nv) -> {
             currentCase.set(nv.isEmpty() ? Case.EMPTY : nv.get(nv.size() - 1));
         });
 
         // statistics fields will react to currentCase changes
-        currentCase.addListener((c, ov, nv) ->{
+        currentCase.addListener((c, ov, nv) -> {
             active.set(nv.active());
             deaths.set(nv.deaths());
             recovered.set(nv.recovered());

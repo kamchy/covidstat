@@ -15,7 +15,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
         var viewModel = new CovidViewModel(new HandmadeService());
-        var scene = new Scene(new CovidView(viewModel), 640, 480);
+        var scene = new Scene(new CovidView(viewModel), 800, 600);
         stage.setScene(scene);
         stage.setTitle("Covid statistics per country");
         stage.show();
