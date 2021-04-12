@@ -38,7 +38,6 @@ public class FileService implements CovidService {
             System.out.printf("Read from %s: %n%s%n", fname, values.isEmpty() ? "Empty": values.get(0));
             result = values.stream();
         } catch (Exception e) {
-            e.printStackTrace();
             result = Stream.empty();
         }
 

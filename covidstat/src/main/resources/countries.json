@@ -8,5 +8,11 @@
         "Country": "Germany",
         "Slug": "germany",
         "ISO2": "DE"
+    },
+    {
+        "Country": "TestCountry",
+        "Slug": "countryWithoutData",
+        "ISO2": "CW"
     }
+
 ]

@@ -11,9 +11,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 enum CASETYPE {
@@ -32,8 +30,7 @@ enum CASETYPE {
 public class ChartView extends Parent {
     private final CategoryAxis xa = new CategoryAxis();
     private final NumberAxis ya = new NumberAxis();
-    private Map<CASETYPE, ObservableList<XYChart.Data<String, Integer>>> oLists = new HashMap<>();
-    private final LineChart lineChart = new LineChart(xa, ya);
+    private final LineChart<String, Integer> lineChart = new LineChart(xa, ya);
 
 
     public ChartView(SimpleListProperty<Case> cases) {
@@ -41,17 +38,8 @@ public class ChartView extends Parent {
         xa.setLabel("Dates");
         ya.setLabel("Cases");
         lineChart.setTitle("Cases");
-        ObservableList<XYChart.Series<String, Integer>> observableSeries = FXCollections.observableArrayList();
-        for (CASETYPE name : CASETYPE.values()){
-            ObservableList<XYChart.Data<String, Integer>> seriesList = FXCollections.observableArrayList();
-            oLists.put(name, seriesList);
-            XYChart.Series<String, Integer> series = new XYChart.Series<>(seriesList);
-            series.setName(name.toString());
-            observableSeries.add(series);
-        }
-        lineChart.setData(observableSeries);
         lineChart.setAnimated(false);
-
+        lineChart.setCreateSymbols(false);
         cases.addListener((o, ov, nv) -> {
             setSeries(nv);
         });
@@ -64,12 +52,15 @@ public class ChartView extends Parent {
     }
 
     private void updateSeriesWith(List<Case> cases) {
+        ObservableList<XYChart.Series<String, Integer>> seriesCollection = FXCollections.observableArrayList();
         Arrays.asList(CASETYPE.values()).forEach(ct ->{
-            oLists.get(ct).setAll(cases.stream()
+            var dataForCasetype = cases.stream()
                     .map(c -> new XYChart.Data<>(c.date().toString(), ct.extract(c)))
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList());
+            XYChart.Series<String, Integer> singleSeries = new XYChart.Series<>(FXCollections.observableArrayList(dataForCasetype));
+            singleSeries.setName(ct.name());
+            seriesCollection.add(singleSeries);
         });
+        lineChart.setData(seriesCollection);
     }
-
-
 }

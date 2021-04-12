@@ -116,7 +116,7 @@ public class CovidView extends VBox {
     private static class LocalDateConverter extends StringConverter<LocalDate> {
         @Override
         public String toString(LocalDate localDate) {
-            return localDate.toString();
+            return localDate == null ? "UNKNOWN" : localDate.toString();
         }
 
         @Override

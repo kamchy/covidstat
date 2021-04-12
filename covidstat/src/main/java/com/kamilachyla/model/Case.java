@@ -10,5 +10,5 @@ public record Case(
         @JsonProperty("Deaths") int deaths,
         @JsonProperty("Recovered") int recovered,
         @JsonProperty("Active") int active){
-    public static final Case EMPTY = new Case(LocalDate.EPOCH, 0, 0, 0, 0);
+    public static final Case EMPTY = new Case(null, 0, 0, 0, 0);
 }
