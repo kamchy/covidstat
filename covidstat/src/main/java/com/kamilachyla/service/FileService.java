@@ -12,12 +12,14 @@ public class FileService implements CovidService {
     private static final String COUNTRIES_FILE = "countries.json";
     private final Deserializer deserializer = new Deserializer();
 
-    public FileService() {
-
-    }
     @Override
     public Stream<Country> getCountries() {
         return deserialize(COUNTRIES_FILE, Country.class);
+    }
+
+    @Override
+    public Stream<Case> getCases(Country data) {
+        return deserialize(data.slug() + ".json", Case.class);
     }
 
     private <T> Stream<T> deserialize(String fname, Class<T> tClass) {
@@ -29,10 +31,5 @@ public class FileService implements CovidService {
         }
 
         return result;
-    }
-
-    @Override
-    public Stream<Case> getCases(Country data) {
-        return deserialize(data.slug() + ".json", Case.class);
     }
 }

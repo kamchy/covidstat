@@ -21,6 +21,7 @@ public class Deserializer {
 
     public <T> Stream<T> parseInputStream(Class<T> tClass, InputStream is) throws java.io.IOException {
         List<T> values = mapper.readerForListOf(tClass).readValue(is);
+        is.close();
         return values.stream();
     }
 }
