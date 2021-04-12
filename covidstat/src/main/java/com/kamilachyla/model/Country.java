@@ -1,7 +1,11 @@
 package com.kamilachyla.model;
 
-import java.util.function.Supplier;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record Country(String name, String slug, String iso2){
+public record Country(
+        @JsonProperty("Country") String name,
+        @JsonProperty("Slug") String slug,
+        @JsonProperty("ISO2") String iso2) {
     public static final Country UNKNOWN = new Country("UNKNOWN", "UNKNOWN", "UNKNOWN");
+
 }

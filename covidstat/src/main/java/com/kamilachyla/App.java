@@ -1,6 +1,7 @@
 package com.kamilachyla;
 
 import com.kamilachyla.gui.CovidView;
+import com.kamilachyla.service.FileService;
 import com.kamilachyla.service.HandmadeService;
 import com.kamilachyla.viewmodel.CovidViewModel;
 import javafx.application.Application;
@@ -14,7 +15,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        var viewModel = new CovidViewModel(new HandmadeService());
+        var viewModel = new CovidViewModel(new FileService());
         var scene = new Scene(new CovidView(viewModel), 800, 600);
         stage.setScene(scene);
         stage.setTitle("Covid statistics per country");
