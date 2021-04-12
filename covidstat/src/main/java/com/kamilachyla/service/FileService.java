@@ -1,27 +1,19 @@
 package com.kamilachyla.service;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.kamilachyla.deserialize.CaseDeserializer;
+import com.kamilachyla.deserialize.Deserializer;
 import com.kamilachyla.model.Case;
 import com.kamilachyla.model.Country;
 
 import java.io.InputStream;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 public class FileService implements CovidService {
     private static final String COUNTRIES_FILE = "countries.json";
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final Deserializer deserializer = new Deserializer();
 
     public FileService() {
-        mapper.configure(
-                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(Case.class, new CaseDeserializer());
-        mapper.registerModule(module);
+
     }
     @Override
     public Stream<Country> getCountries() {
@@ -31,8 +23,7 @@ public class FileService implements CovidService {
     private <T> Stream<T> deserialize(String fname, Class<T> tClass) {
         Stream<T> result;
         try(InputStream is = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(fname))){
-            List<T> values = mapper.readerForListOf(tClass).readValue(is);
-            result = values.stream();
+            result = deserializer.parseInputStream(tClass, is);
         } catch (Exception e) {
             result = Stream.empty();
         }
